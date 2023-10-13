@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Socket.IO</title>
+    <script src="/lib/socket.io_4.7.2.min.js"></script>
+    <script src="/lib/canvas-confetti1.9.0.min.js"></script>
+    <script src="/lib/malware.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <audio src="/media/Nyan_Cat.mp3"></audio>
+
+    <main id="overlay">
+      <div class="end">
+        <img
+          class="end-video"
+          src="https://media.tenor.com/_c4jenBWlpkAAAAC/twice-heart.gif"
+          alt=""
+        />
+      </div>
+      </div>
+    </main>
+
+    <script>
+      
+      const socket = io("http://localhost:3006");
+      socket.on("connect", () => {
+        console.log("Connecté au serveur Socket.IO");
+      });
+
+      socket.on("confetti", () => {
+        console.log("Animation de confettis déclenchée!");
+        var end = Date.now() + 5 * 1000;
+        // Confetti
+        var colors = ["#bb0000", "#ffffff"];
+
+        (function frame() {
+          confetti({
+            particleCount: 2,
+            angle: 60,
+            spread: 80,
+            origin: { x: 0 },
+            colors: colors,
+          });
+          confetti({
+            particleCount: 2,
+            angle: 120,
+            spread: 80,
+            origin: { x: 1 },
+            colors: colors,
+          });
+
+          if (Date.now() < end) {
+            requestAnimationFrame(frame);
+          }
+
+          setTimeout(() => {
+            confetti.reset();
+          }, end);
+        })();
+      });
+      socket.on("reconnect_attempt", (attemptNumber) => {
+        console.log(`Tentative de reconnexion #${attemptNumber}...`);
+        // Attend 3 secondes avant la prochaine tentative de reconnexion
+        setTimeout(() => {
+          console.log("Tentative de reconnexion dans 3 secondes...");
+        }, 3000);
+      });
+
+      // Malware
+      const nbRows = 32;
+      const nbCols = 32;
+      const nbPhases = 8;
+      const malware = new Malware("#overlay", {
+        nbRows,
+        nbCols,
+        nbPhases,
+        onEnd: () => {
+          const endAnimationContainer = document.querySelector(".end");
+          const filledArray = document.querySelectorAll(".filled")
+          filledArray.forEach(filled => {
+            filled.style.backgroundColor = "#000000da"
+          })
+
+          const animationAudio = document.querySelector("audio");
+          endAnimationContainer.classList.add("end-active");
+          animationAudio.play();
+
+          setTimeout(() => {
+            // Stop and reset the music
+            animationAudio.pause();
+            animationAudio.currentTime = 0;
+            // Remove the end animation
+            endAnimationContainer.classList.remove("end-active");
+            // Reset malware
+            const divEnd = document.createElement("div");
+            divEnd.className = "end";
+            divEnd.innerHTML = endAnimationContainer.innerHTML;
+            malware.reset(); // l'overlay est vidé de tout, même les composants d'animation !!
+
+            document.querySelector("#overlay").prepend(divEnd); // rebuild... he he he
+          }, 20000);
+        },
+      });
+
+      const handleFillCell = (count) => {
+        console.log("malware client");
+        for (let i = 0; i < count; i++) {
+          malware.fillCell();
+        }
+      };
+
+      malware.init();
+      socket.on("malware", handleFillCell);
+    </script>
+  </body>
+</html>

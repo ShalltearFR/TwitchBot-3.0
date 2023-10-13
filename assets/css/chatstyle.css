@@ -1,0 +1,19 @@
+.containerMessage{
+    width: 580px;
+    border: solid 1px;
+    margin-bottom: 20px;
+}
+.username{
+    margin : 0;
+    padding: 0;
+    width: 552px;
+    font-size: 3.2rem;
+    transform: translateX(25px);
+    border: solid 3px green;
+    border-radius: 15%;
+}
+
+.message{
+    font-size: 2rem;
+    border: solid 1px blue;
+}
