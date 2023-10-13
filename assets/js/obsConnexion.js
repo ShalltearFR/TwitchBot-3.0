@@ -1,7 +1,5 @@
 const obsConnect = require('../json/connect.json')
 const OBSWebSocket = require('obs-websocket-js').default;
-//const obs = new OBSWebSocket();
-// //import OBSWebSocket, {EventSubscription} from 'obs-websocket-js';
 
 class OBS{
     constructor(){
