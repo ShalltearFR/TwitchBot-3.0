@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuration du bot</title>
+    <script src="/lib/tailwind3.3.3.js"></script>
+    <script src="/js/tailwind.config.js"></script>
+    <link rel="stylesheet" href="css/tailwind.css" />
+  </head>
+  <body class="grid grid-cols-[280px_[calc(100vw-280px)]] w-full">
+    <nav class="border-r-[1px] h-screen w-[280px] border-black fixed">
+      <h1 class="text-3xl text-center">Menu</h1>
+      <ul class="mt-8">
+        <li class="w-3/4 h-8 bg-gray-300 flex mx-auto items-center justify-center rounded-lg">Points de chaine</li>
+      </ul>
+    </nav>
+    <section class="ml-[280px]">
+      <h1 class="text-3xl text-center">Points de chaine</h1>
+
+      <div id="rewardsCard"></div>
+    </section>
+
+    <script src="/js/channelPoints.js"></script>
+  </body>
+</html>

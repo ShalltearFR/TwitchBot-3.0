@@ -4,7 +4,8 @@
   "description": "bot twitch",
   "main": "startServer.js",
   "scripts": {
-    "test": "startServer.js"
+    "dev": "node server.js",
+    "build": "Start_Server.bat"
   },
   "author": "ShalltearFR",
   "license": "ISC",

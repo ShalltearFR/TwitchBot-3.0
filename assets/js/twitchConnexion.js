@@ -15,7 +15,6 @@ if (!fs.existsSync("assets/json/twitchToken.json")) {
 }
 
 async function initializeAuthProvider() {
-
   const authProvider = new RefreshingAuthProvider({
     clientId: twitchAuth.clientID,
     clientSecret: twitchAuth.clientSecret,
@@ -26,7 +25,7 @@ async function initializeAuthProvider() {
       "assets/json/twitchToken.json",
       JSON.stringify(newTokenData, null, 4)
     );
-    console.log("   -> Refresh du token twitch")
+    console.log("   -> Refresh du token twitch");
   });
 
   await authProvider
@@ -53,10 +52,13 @@ async function setupBot() {
     twitchChat.connect();
 
     console.log("   -> Bot connecté au chat Twitch");
-    console.log("");
 
     return { twitchListener, twitchChat, twitchAPI };
-  } else { console.log("   -> Authentification en attente. Relancez le bot après l'authentification"); }
+  } else {
+    console.log(
+      "   -> Authentification en attente. Relancez le bot après l'authentification"
+    );
+  }
 }
 
 module.exports = setupBot();

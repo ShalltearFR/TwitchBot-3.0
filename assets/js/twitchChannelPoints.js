@@ -16,25 +16,32 @@ if (!fs.existsSync("assets/json/twitchToken.json")) {
 }
 
 twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
-  // twitchChat.onMessage(async (channel, user, text, details) => {
-  //   console.log("| Message chat |", details.userInfo.displayName, ":", text);
-  // });
+  twitchChat.onMessage(async (channel, user, text, details) => {
+    // console.log("| Message chat |", details.userInfo.displayName, ":", text);
+  });
 
-  // Recuperer info d'un reward
-  //twitchAPI.channelPoints.getCustomRewardById(twitchAuth.channelID, "92969a97-b4f5-44b1-bd97-ee3cc9839094").then(data => console.log(data.isPaused))
+  // Recup les infos de scène
+  // obs.client.call("GetSceneItemList", {"sceneName" : "Dev"}).then(list => {
+  //   console.log(list)
+  // })
+
+  const getTwitchAvatar = async(user) => {
+    const data = await twitchAPI.users.getUserByName(user)
+    return data.profilePictureUrl
+  }
 
   twitchChat.onRitual(async (channel, user, ritualInfo, msg) => {
     player.play("sons/misc/wizz.mp3", function (err) {
       if (err) throw err;
     });
+    getTwitchAvatar(user).then(avatarUrl => {
+      io.emit("ritualAvatar", avatarUrl)
+    })
   });
 
   twitchListener.onChannelRedemptionAdd(twitchAuth.channelID, (e) => {
     console.log("REWARD |", e.rewardId);
-    // Recup les infos de scène
-    // obs.client.call("GetSceneItemList", {"sceneName" : "Dev"}).then(list => {
-    //   console.log(list)
-    // })
+
 
     rewardJSON.data.forEach((element) => {
       if (element.rewardID.includes(e.rewardId)) {
@@ -79,11 +86,13 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
 
         // Reward Socket io
         if (element.type === "socket io") {
-          if (element.exec.arg === "") {
-            io.emit(element.exec.name)
-          } else {
-            io.emit(element.exec.name, element.exec.arg)
-          }
+          element.exec.forEach((singleExec) => {
+            if (singleExec.arg === "") {
+              io.emit(singleExec.name)
+            } else {
+              io.emit(singleExec.name, singleExec.arg)
+            }
+          })
         }
       }
     });
