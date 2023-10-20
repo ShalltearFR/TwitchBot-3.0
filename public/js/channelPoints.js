@@ -11,16 +11,16 @@ const fetchJSON = async (url) => {
   return response.json();
 };
 
+const deleteDiv = (id) => {
+  const selectedDiv = document.getElementById(id);
+  selectedDiv.remove();
+};
+
 const createOption = (value, text) => {
   const option = document.createElement("option");
   option.value = value;
   option.text = text;
   return option;
-};
-
-const deleteDiv = (id) => {
-  const selectedDiv = document.getElementById(id)
-  selectedDiv.remove();
 };
 
 const createLabelWithOptions = (title, effect, list, object) => {
@@ -63,16 +63,55 @@ const createLabelWithInput = (title, type, value) => {
   return label;
 };
 
-const createExec = async (type, execList, scenesList) => {
+const createSingleExec = () => {
+  const execSingleUid = uid();
+  const exec = document.createElement("div");
+  exec.classList.add("ml-16", "flex", "gap-x-2");
+  exec.setAttribute("id", execSingleUid);
+
+  const execFirstLabel = document.createElement("label");
+  execFirstLabel.innerHTML = `<span class="select-none">Nom de l'évènement : </span>`;
+  const execFirstSelect = document.createElement("select");
+
+  ["Confetti", "Malware"].forEach((scene) => {
+    execFirstSelect.appendChild(createOption(scene, scene));
+  });
+  //execFirstSelect.value = execSingle.name;
+  execFirstLabel.appendChild(execFirstSelect);
+  exec.appendChild(execFirstLabel);
+  return exec
+};
+
+const createExecs = async (type, execList, scenesList) => {
   const label = document.createElement("label");
   label.innerHTML = '<span class="select-none">Execution(s) :</span>';
-  const button = document.createElement("button");
-  button.classList.add("btn", "rounded-full", "px-2", "text-xl", "bg-white");
-  button.innerText = "+";
-  label.appendChild(button);
+  const createExecButton = document.createElement("button");
+  createExecButton.classList.add(
+    "btn",
+    "rounded-full",
+    "px-2",
+    "text-xl",
+    "bg-white"
+  );
+  createExecButton.innerText = "+";
+  createExecButton.addEventListener("mousedown", (event) => {
+    console.log("fsdfs");
+    label.appendChild(createSingleExec(
+      "socket io",
+      [
+        {
+          name: "confetti",
+          arg: "",
+        },
+      ],
+      scenesList
+    ));
+    event.stopPropagation(); // Arrête la propagation de l'événement de clic
+  });
+  label.appendChild(createExecButton);
 
   for (const execSingle of execList) {
-    const execUid = uid()
+    const execUid = uid();
     const exec = document.createElement("div");
     exec.classList.add("ml-16", "flex", "gap-x-2");
     exec.setAttribute("id", execUid);
@@ -122,6 +161,17 @@ const createExec = async (type, execList, scenesList) => {
           createLabelWithInput("Rotation :", "text", execSingle.degree)
         );
       }
+    } else {
+      const execFirstLabel = document.createElement("label");
+      execFirstLabel.innerHTML = `<span class="select-none">Nom de l'évènement : </span>`;
+      const execFirstSelect = document.createElement("select");
+
+      ["Confetti", "Malware"].forEach((scene) => {
+        execFirstSelect.appendChild(createOption(scene, scene));
+      });
+      execFirstSelect.value = execSingle.name;
+      execFirstLabel.appendChild(execFirstSelect);
+      exec.appendChild(execFirstLabel);
     }
     const delButton = document.createElement("button");
     delButton.classList.add(
@@ -139,18 +189,16 @@ const createExec = async (type, execList, scenesList) => {
 
     label.appendChild(exec);
   }
-
   return label;
 };
 
 const rewardsCardElement = document.querySelector("#rewardsCard");
-
 const initializeRewardsCard = async () => {
   const rewardFile = await fetchJSON("/api/rewardsFile");
   const rewardsList = await fetchJSON("/api/rewardsList");
   const scenesList = await fetchJSON("/api/obsScenesList");
 
-  rewardFile.data.forEach(async (reward, index) => {
+  rewardFile?.data?.forEach(async (reward, index) => {
     const card = document.createElement("div");
     card.classList.add(
       "flex",
@@ -186,15 +234,23 @@ const initializeRewardsCard = async () => {
 
     if (reward.type !== "socket io") {
       card.appendChild(
-        createLabelWithInput("Temps d'effet :", "number", reward.effectCooldown)
+        createLabelWithInput("Temps d'effet (en ms) :", "number", reward.effectCooldown)
       );
     }
 
-    const execLabel = await createExec(reward.type, reward.exec, scenesList);
+    const execLabel = await createExecs(reward.type, reward.exec, scenesList);
     card.appendChild(execLabel);
 
     rewardsCardElement.appendChild(card);
   });
+
+  // const createExecButton = document.createElement("button");
+  // createExecButton.onclick = () => {
+  //   createExecs("socket io", [{
+  //     name: "confetti",
+  //     arg: ""
+  //   }], scenesList);
+  // };
 };
 
 initializeRewardsCard();

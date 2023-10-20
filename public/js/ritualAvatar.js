@@ -1,6 +1,6 @@
 // Affiche l'avatar twitch pour les nouveaux arrivant
 const mainRitualElement = document.querySelector("#MainRitual");
-socket.on("ritualAvatar", (avatarUrl) => {
+socket.on("RitualAvatar", (avatarUrl) => {
   // Creation de la div d'image avec ajout de class
   const ritualDivElement = document.createElement("div");
   ritualDivElement.classList.add("ritualDiv");

@@ -12,6 +12,7 @@ if (!fs.existsSync("assets/json/twitchToken.json")) {
   return null;
 } else {
   token = require("../json/twitchToken.json");
+  module.exports = setupBot();
 }
 
 async function initializeAuthProvider() {
@@ -52,7 +53,8 @@ async function setupBot() {
     twitchChat.connect();
 
     console.log("   -> Bot connecté au chat Twitch");
-
+    console.log("");
+    
     return { twitchListener, twitchChat, twitchAPI };
   } else {
     console.log(
@@ -60,5 +62,3 @@ async function setupBot() {
     );
   }
 }
-
-module.exports = setupBot();

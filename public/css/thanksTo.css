@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  width: 1920px;
+  height: 1080px;
+}
+
+h1 {
+  /* text-align: center; */
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px 0;
+}
