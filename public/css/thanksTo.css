@@ -1,15 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Lobster&family=Satisfy&display=swap');
+
 body {
   margin: 0;
-  width: 1920px;
+  width: 1000px;
   height: 1080px;
 }
 
 h1 {
-  /* text-align: center; */
+  text-align: center;
+  font-family: "Lobster";
+  font-size: 96px;
+  margin-top: 0;
+  margin-bottom: 20px;
+  animation: pulse;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
 }
 
 main {
   display: flex;
   flex-direction: column;
   gap: 20px 0;
+}
+
+section div{
+  text-align: center;
+  position: relative;
+  font-family: "Lobster";
+  font-size: 32px;
+  color: #b85909;
+  text-decoration: underline;
+  text-underline-offset: 8px;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  list-style: none;
+  text-align: center;
+  font-family: "Satisfy";
+  font-size: 28px;
+  margin: 0;
+  padding: 0;
 }
