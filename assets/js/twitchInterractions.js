@@ -28,9 +28,9 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
     // if (!thanksTo.subs.includes({"filterMoi"})) {
     // }
     twitchAPI.channelPoints.createCustomReward(twitchAuth.channelID, {
-      title: 'Nouvelle Récompense',
+      title: "Nouvelle Récompense",
       cost: 200, // coût en points de chaîne
-      isPaused: false // la récompense est activée par défaut
+      isPaused: false, // la récompense est activée par défaut
     });
   });
 
@@ -44,6 +44,7 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
     twitchAuth.channelID,
     twitchAuth.channelID,
     (event) => {
+      console.log(`FOLLOW EVENT | NAME : ${event.userDisplayName} |`);
       const followerName = event.userDisplayName;
       if (!thanksTo.follows.includes(followerName)) {
         thanksTo.follows.push(followerName);
@@ -51,13 +52,13 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
           "assets/json/thanksTo.json",
           JSON.stringify(thanksTo, null, 4)
         );
-        console.log("FOLLOW EVENT | NAME :", event.userDisplayName, "|");
       }
     }
   );
 
   // Ajoute le sub dans la liste
   twitchListener.onChannelSubscription(twitchAuth.channelID, (event) => {
+    console.log(`SUBSCRIBE EVENT | NAME : ${event.userDisplayName} |`);
     const subscriberName = event.userDisplayName;
     if (!thanksTo.subs.includes(subscriberName) && !event.isGift) {
       thanksTo.subs.push(subscriberName);
@@ -65,12 +66,12 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
         "assets/json/thanksTo.json",
         JSON.stringify(thanksTo, null, 4)
       );
-      console.log("SUBSCRIBE EVENT | NAME :", event.userDisplayName, "|");
     }
   });
 
   // Ajoute le gift dans la liste
   twitchListener.onChannelSubscriptionGift(twitchAuth.channelID, (event) => {
+    console.log(`GIFTER EVENT | NAME : ${event.gifterDisplayName} |`);
     // Verifie si le gifter existe
     let isGifterAllReadyExist = false;
     for (let i = 0; i < thanksTo.gifts.length; i++) {
@@ -96,11 +97,13 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
       "assets/json/thanksTo.json",
       JSON.stringify(thanksTo, null, 4)
     );
-    console.log("GIFTER EVENT | NAME :", event.gifterDisplayName, "|");
   });
 
   // Ajoute le raid dans la liste
   twitchListener.onChannelRaidFrom(twitchAuth.channelID, (event) => {
+    console.log(
+      `RAID EVENT | NAME: ${event.raidingBroadcasterDisplayName} AVEC ${event.viewers} VIEWERS|`
+    );
     thanksTo.raids.push(
       `${event.raidingBroadcasterDisplayName} avec ${event.viewers} viewers`
     );
@@ -108,50 +111,44 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
       "assets/json/thanksTo.json",
       JSON.stringify(thanksTo, null, 4)
     );
-    console.log(
-      `RAID EVENT | NAME: ${event.raidingBroadcasterDisplayName} AVEC ${event.viewers} VIEWERS|`
-    );
   });
 
   // Ajoute les bits dans la liste
-  twitchListener.onChannelCheer(
-    twitchAuth.channelID,
-    twitchAuth.channelID,
-    (event) => {
-      // Verifie si le gifter existe
-      let isGifterAllReadyExist = false;
-      for (let i = 0; i < thanksTo.bits.length; i++) {
-        if (thanksTo.bits[i].hasOwnProperty(event.userDisplayName)) {
-          isGifterAllReadyExist = true;
-          break;
-        }
+  twitchListener.onChannelCheer(twitchAuth.channelID, (event) => {
+    console.log(`CHEER EVENT | NAME : ${event.userDisplayName} |`);
+    // Verifie si le gifter existe
+    let isGifterAllReadyExist = false;
+    for (let i = 0; i < thanksTo.bits.length; i++) {
+      if (thanksTo.bits[i].hasOwnProperty(event.userDisplayName)) {
+        isGifterAllReadyExist = true;
+        break;
       }
-
-      // S'il n'existe pas, l'ajoute
-      if (!isGifterAllReadyExist) {
-        let newCheer = {};
-        newCheer[event.userDisplayName] = {
-          amount: event.bits,
-        };
-        thanksTo.bits.push(newCheer);
-      } else {
-        // S'il existe, change juste la propriété de amount de la personne qui a cheer
-        thanksTo.bits[event.userDisplayName].amount += event.bits;
-      }
-      fs.writeFileSync(
-        "assets/json/thanksTo.json",
-        JSON.stringify(thanksTo, null, 4)
-      );
-      console.log("CHEER EVENT | NAME :", event.userDisplayName, "|");
     }
-  );
+
+    // S'il n'existe pas, l'ajoute
+    if (!isGifterAllReadyExist) {
+      let newCheer = {};
+      newCheer[event.userDisplayName] = {
+        amount: event.bits,
+      };
+      thanksTo.bits.push(newCheer);
+    } else {
+      // S'il existe, change juste la propriété de amount de la personne qui a cheer
+      thanksTo.bits[event.userDisplayName].amount += event.bits;
+    }
+    fs.writeFileSync(
+      "assets/json/thanksTo.json",
+      JSON.stringify(thanksTo, null, 4)
+    );
+  });
 
   const getTwitchAvatar = async (user) => {
     const data = await twitchAPI.users.getUserByName(user);
     return data.profilePictureUrl;
   };
 
-  twitchChat.onRitual(async (channel, user, ritualInfo, msg) => {
+  twitchChat.onRitual((channel, user, ritualInfo, msg) => {
+    console.log(`RITUAL EVENT | USER : ${user} |`);
     player.play("sons/misc/wizz.mp3", function (err) {
       if (err) throw err;
     });
@@ -161,14 +158,7 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
   });
 
   twitchListener.onChannelRedemptionAdd(twitchAuth.channelID, (e) => {
-    console.log(
-      "REWARD EVENT | ID :",
-      e.rewardId,
-      " NAME :",
-      e.rewardTitle,
-      "|"
-    );
-
+    console.log(`REWARD EVENT | ID : ${e.rewardId} NAME : ${e.rewardTitle} |`);
     rewardJSON.data.forEach((element) => {
       if (element.rewardID.includes(e.rewardId)) {
         // Activer/desactiver un ou plusieurs effets d'une ou plusieurs source(s)
