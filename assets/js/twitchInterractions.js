@@ -27,6 +27,11 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
     // console.log("| Message chat |", details.userInfo.displayName, ":", text);
     // if (!thanksTo.subs.includes({"filterMoi"})) {
     // }
+    twitchAPI.channelPoints.createCustomReward(twitchAuth.channelID, {
+      title: 'Nouvelle Récompense',
+      cost: 200, // coût en points de chaîne
+      isPaused: false // la récompense est activée par défaut
+    });
   });
 
   // Recup les infos de scène
@@ -245,4 +250,22 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
       }, 15);
     }
   }
+
+  // Gère automatiquement le cooldown de la récompense de points de chaine
+  io.on("connection", (socket) => {
+    socket.on("disableMalware", (cooldown) => {
+      twitchAPI.channelPoints.updateCustomReward(
+        twitchAuth.channelID,
+        "4f6f45ef-bfde-4c2e-950f-a14104124e68",
+        { isPaused: true }
+      );
+      setTimeout(() => {
+        twitchAPI.channelPoints.updateCustomReward(
+          twitchAuth.channelID,
+          "4f6f45ef-bfde-4c2e-950f-a14104124e68",
+          { isPaused: false }
+        );
+      }, Number(cooldown));
+    });
+  });
 });
