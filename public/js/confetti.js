@@ -22,9 +22,11 @@ socket.on("Confetti", () => {
     if (Date.now() < end) {
       requestAnimationFrame(frame);
     }
-
-    setTimeout(() => {
-      confetti.reset();
-    }, end);
   })();
+
+  // Déplacez confetti.reset() à l'extérieur de la fonction frame()
+  setTimeout(() => {
+    console.log("oui");
+    confetti.reset();
+  }, end);
 });
