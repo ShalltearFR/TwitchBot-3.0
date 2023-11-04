@@ -140,15 +140,31 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
   });
 
   app.get("/api/clip", (req, res) => {
-    const test = twitchAPI.clips.getClipsForBroadcasterPaginated(
+    const request = twitchAPI.clips.getClipsForBroadcasterPaginated(
       twitchAuth.channelID
     );
-    test.getAll().then((clips) => {
+
+    request.getAll().then((clips) => {
       const randomClip = clips[Math.floor(Math.random() * clips.length)];
       res.send({
-        embed: randomClip.embedUrl,
-        duration: randomClip.duration,
+        id: randomClip.id,
+        duration: randomClip.duration || 1,
       });
+    });
+  });
+
+  app.get("/api/clips", (req, res) => {
+    const request = twitchAPI.clips.getClipsForBroadcasterPaginated(
+      twitchAuth.channelID
+    );
+
+    request.getAll().then((clips) => {
+      const result = clips.map((clip) => ({
+        id: clip.id,
+        duration: clip.duration || 1
+      }));
+
+      res.send({ data: result, total: result.length });
     });
   });
 });

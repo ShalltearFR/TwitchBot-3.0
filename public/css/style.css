@@ -1,7 +1,7 @@
 body {
   margin: 0;
-  width: 1920px;
-  height: 1080px;
+  width: 100vw;
+  height: 100vh;
 }
 
 h1 {
@@ -14,9 +14,9 @@ h1 {
 }
 
 #overlay {
-  width: 100%;
-  height: 100%;
-  position: relative;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
   overflow: hidden;
 }
 
@@ -78,4 +78,103 @@ h1 {
 iframe {
   border: 0;
   border-radius: 30px;
+}
+
+.snowflakes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.snowflake {
+  position: absolute;
+  border-radius: 50%; /* Pour créer des flocons de neige ronds */
+  opacity: 1; /* Opacité des flocons de neige */
+  animation: fall linear infinite;
+  background-color: white;
+  filter: blur(4px);
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-120vh);
+  }
+  100% {
+    transform: translateY(120vh);
+  }
+}
+
+.dropHearts {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.dropHeart {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 1;
+  animation: fall 5s ease-in-out;
+  filter: blur(4px);
+}
+
+#pauseClip{
+  width: 960px;
+  height: 540px;
+  background-color: black;
+  border-radius: 30px;
+  overflow: hidden;
+  z-index: 3000;
+}
+
+#pauseClip iframe{
+  z-index: 30;
+  position: relative;
+}
+
+#pauseClip #loading {
+  position: absolute;
+  z-index: 20;
+  display: flex;
+  width: 960px;
+  height: 540px;
+  align-items: center;
+  justify-content: center;
+}
+
+#pauseClip #loading img{ 
+  z-index: 20;
+  width: 60px;
+}
+
+#loading img {
+  animation: loadingAnimation 0.5s ease-in-out infinite;
+}
+
+#pauseClip .pauseTransition {
+  z-index: 40;
+  animation: translatePause 1.7s ease-in-out;
+}
+
+@keyframes translatePause {
+  100% {
+    transform: translateY(3500px);
+    display: none;
+  }
+}
+
+@keyframes loadingAnimation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }

@@ -23,16 +23,16 @@ let thanksTo = {
 };
 
 twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
+  initPage();
+
   twitchChat.onMessage(async (channel, user, text, details) => {
     // console.log("| Message chat |", details.userInfo.displayName, ":", text);
-    // if (!thanksTo.subs.includes({"filterMoi"})) {
-    // }
   });
 
   // Recup les infos de scène
-  // obs.client.call("GetSceneItemList", {"sceneName" : "Dev"}).then(list => {
-  //   console.log(list)
-  // })
+  // obs.client.call("GetSceneItemList", { sceneName: "Capture ancien jeu" }).then((list) => {
+  //   console.log(list);
+  // });
 
   // Ajoute le follow dans la liste
   twitchListener.onChannelFollow(
@@ -236,3 +236,32 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
     }
   }
 });
+
+function initPage() {
+  const sources = [
+    {
+      scene: "Capture ancien jeu",
+      id: 20,
+    },
+    {
+      scene: "Dev",
+      id: 32,
+    }
+  ];
+
+  sources.forEach((source) => {
+    obs.client.call("SetSceneItemEnabled", {
+      sceneName: source.scene,
+      sceneItemId: source.id,
+      sceneItemEnabled: false,
+    });
+
+    setTimeout(() => {
+      obs.client.call("SetSceneItemEnabled", {
+        sceneName: source.scene,
+        sceneItemId: source.id,
+        sceneItemEnabled: true,
+      });
+    }, 1000);
+  });
+}
