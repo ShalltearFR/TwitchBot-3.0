@@ -67,25 +67,22 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
   // Ajoute le gift dans la liste
   twitchListener.onChannelSubscriptionGift(twitchAuth.channelID, (event) => {
     console.log(`GIFTER EVENT | NAME : ${event.gifterDisplayName} |`);
-    // Verifie si le gifter existe
-    let isGifterAllReadyExist = false;
+    let isGifterAlreadyExist = false;
     for (let i = 0; i < thanksTo.gifts.length; i++) {
       if (thanksTo.gifts[i].hasOwnProperty(event.gifterDisplayName)) {
-        isGifterAllReadyExist = true;
-        break;
+        isGifterAlreadyExist = true;
+        // Mise à jour de la propriété amount du gifter existant
+        thanksTo.gifts[i][event.gifterDisplayName].amount += event.amount;
+        break; // Sortir de la boucle une fois que le gifter a été mis à jour
       }
     }
 
-    // S'il n'existe pas, l'ajoute
-    if (!isGifterAllReadyExist) {
+    if (!isGifterAlreadyExist) {
       let newGifter = {};
       newGifter[event.gifterDisplayName] = {
         amount: event.cumulativeAmount,
       };
       thanksTo.gifts.push(newGifter);
-    } else {
-      // S'il existe, change juste la propriété de amount du gifter
-      thanksTo.gifts[event.gifterDisplayName].amount = event.cumulativeAmount;
     }
 
     fs.writeFileSync(
@@ -95,7 +92,7 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
   });
 
   // Ajoute le raid dans la liste
-  twitchListener.onChannelRaidFrom(twitchAuth.channelID, (event) => {
+  twitchListener.onChannelRaidTo(twitchAuth.channelID, (event) => {
     console.log(
       `RAID EVENT | NAME: ${event.raidingBroadcasterDisplayName} AVEC ${event.viewers} VIEWERS|`
     );
@@ -111,26 +108,25 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
   // Ajoute les bits dans la liste
   twitchListener.onChannelCheer(twitchAuth.channelID, (event) => {
     console.log(`CHEER EVENT | NAME : ${event.userDisplayName} |`);
-    // Verifie si le gifter existe
-    let isGifterAllReadyExist = false;
+    let isGifterAlreadyExist = false;
     for (let i = 0; i < thanksTo.bits.length; i++) {
       if (thanksTo.bits[i].hasOwnProperty(event.userDisplayName)) {
-        isGifterAllReadyExist = true;
-        break;
+        isGifterAlreadyExist = true;
+        // Mise à jour de la propriété amount du gifter existant
+        gifter[event.userDisplayName].amount += event.bits;
+        break; // Sortir de la boucle une fois que le gifter a été mis à jour
       }
     }
 
-    // S'il n'existe pas, l'ajoute
-    if (!isGifterAllReadyExist) {
+    // Si le gifter n'existe pas, l'ajouter à thanksTo.bits
+    if (!isGifterAlreadyExist) {
       let newCheer = {};
       newCheer[event.userDisplayName] = {
         amount: event.bits,
       };
       thanksTo.bits.push(newCheer);
-    } else {
-      // S'il existe, change juste la propriété de amount de la personne qui a cheer
-      thanksTo.bits[event.userDisplayName].amount += event.bits;
     }
+
     fs.writeFileSync(
       "assets/json/thanksTo.json",
       JSON.stringify(thanksTo, null, 4)
@@ -246,7 +242,7 @@ function initPage() {
     {
       scene: "Dev",
       id: 32,
-    }
+    },
   ];
 
   sources.forEach((source) => {
