@@ -178,3 +178,21 @@ iframe {
     transform: scale(1);
   }
 }
+
+#HyppeTrain {
+  opacity: 0;
+}
+
+.activeTrain {
+  animation: hyppeTrainAnimation 10s linear infinite;
+  opacity: 1 !important;
+}
+
+@keyframes hyppeTrainAnimation {
+  from {
+    transform: translateX(1920px); 
+  }
+  to {
+    transform: translateX(-208px); 
+  }
+}

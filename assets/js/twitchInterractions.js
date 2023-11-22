@@ -2,6 +2,7 @@ const { twitch: twitchAuth } = require("../json/connect.json");
 const fs = require("fs");
 const openUrl = require("openurl");
 const rewardJSON = require("../json/rewards.json");
+const sources = require("../json/initPage.json");
 const { obs } = require("./obsConnexion");
 const player = require("play-sound")(
   (opts = { player: "./MPlayer/mplayer.exe" })
@@ -22,17 +23,53 @@ let thanksTo = {
   raids: [],
 };
 
+let trainLevel = 0;
+
 twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
-  initPage();
-
-  twitchChat.onMessage(async (channel, user, text, details) => {
-    // console.log("| Message chat |", details.userInfo.displayName, ":", text);
-  });
-
   // Recup les infos de scène
-  // obs.client.call("GetSceneItemList", { sceneName: "Capture ancien jeu" }).then((list) => {
+  // obs.client.call("GetSceneItemList", { sceneName: "Dev" }).then((list) => {
   //   console.log(list);
   // });
+  const getTwitchAvatar = async (user) => {
+    const data = await twitchAPI.users.getUserByName(user);
+    return data.profilePictureUrl;
+  };
+
+  initPage();
+
+  twitchChat.onMessage(async (channel, user, text, msg) => {
+    // console.log("| Message chat |", details.userInfo.displayName, ":", text);
+    if (msg.isFirst) {
+      console.log(`RITUAL EVENT | USER : ${user} |`);
+      getTwitchAvatar(user).then((avatarUrl) => {
+        io.emit("RitualAvatar", avatarUrl);
+      });
+      player.play("sons/misc/wizz.mp3", function (err) {
+        if (err) throw err;
+      });
+    }
+  });
+
+  // Evenement de train de la hyppe qui debute
+  twitchListener.onChannelHypeTrainBegin(twitchAuth.channelID, (event) => {
+    io.emit("Confetti", "beginTrain");
+  });
+
+  // Evenement de train de la hyppe qui monte de niveau
+  twitchListener.onChannelHypeTrainProgress(twitchAuth.channelID, (event) => {
+    if (trainLevel < event.level) {
+      trainLevel = event.level;
+      io.emit("Confetti", "ProgressTrain");
+      player.play("/sons/misc/TrainLevelUp.mp3", function (err) {
+        if (err) throw err;
+      });
+    }
+  });
+
+  // Evenement de train de la hyppe qui prend fin
+  twitchListener.onChannelHypeTrainEnd(twitchAuth.channelID, (event) => {
+    io.emit("Confetti", "endTrain");
+  });
 
   // Ajoute le follow dans la liste
   twitchListener.onChannelFollow(
@@ -68,21 +105,21 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
   twitchListener.onChannelSubscriptionGift(twitchAuth.channelID, (event) => {
     console.log(`GIFTER EVENT | NAME : ${event.gifterDisplayName} |`);
     let isGifterAlreadyExist = false;
+
     for (let i = 0; i < thanksTo.gifts.length; i++) {
-      if (thanksTo.gifts[i].hasOwnProperty(event.gifterDisplayName)) {
+      if (thanksTo.gifts[i].name === event.gifterDisplayName ?? "Anonymous") {
         isGifterAlreadyExist = true;
         // Mise à jour de la propriété amount du gifter existant
-        thanksTo.gifts[i][event.gifterDisplayName].amount += event.amount;
+        thanksTo.gifts[i].amount += event.amount;
         break; // Sortir de la boucle une fois que le gifter a été mis à jour
       }
     }
 
     if (!isGifterAlreadyExist) {
-      let newGifter = {};
-      newGifter[event.gifterDisplayName] = {
-        amount: event.cumulativeAmount,
-      };
-      thanksTo.gifts.push(newGifter);
+      thanksTo.gifts.push({
+        name: event.gifterDisplayName ?? "Anonymous",
+        amount: event.amount,
+      });
     }
 
     fs.writeFileSync(
@@ -110,42 +147,26 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
     console.log(`CHEER EVENT | NAME : ${event.userDisplayName} |`);
     let isGifterAlreadyExist = false;
     for (let i = 0; i < thanksTo.bits.length; i++) {
-      if (thanksTo.bits[i].hasOwnProperty(event.userDisplayName)) {
+      if (thanksTo.bits[i].name === event.userDisplayName ?? "Anonymous") {
         isGifterAlreadyExist = true;
         // Mise à jour de la propriété amount du gifter existant
-        gifter[event.userDisplayName].amount += event.bits;
+        thanksTo.bits[i].amount += event.bits;
         break; // Sortir de la boucle une fois que le gifter a été mis à jour
       }
     }
 
     // Si le gifter n'existe pas, l'ajouter à thanksTo.bits
     if (!isGifterAlreadyExist) {
-      let newCheer = {};
-      newCheer[event.userDisplayName] = {
+      thanksTo.bits.push({
+        name: event.userDisplayName ?? "Anonymous",
         amount: event.bits,
-      };
-      thanksTo.bits.push(newCheer);
+      });
     }
 
     fs.writeFileSync(
       "assets/json/thanksTo.json",
       JSON.stringify(thanksTo, null, 4)
     );
-  });
-
-  const getTwitchAvatar = async (user) => {
-    const data = await twitchAPI.users.getUserByName(user);
-    return data.profilePictureUrl;
-  };
-
-  twitchChat.onRitual((channel, user, ritualInfo, msg) => {
-    console.log(`RITUAL EVENT | USER : ${user} |`);
-    player.play("sons/misc/wizz.mp3", function (err) {
-      if (err) throw err;
-    });
-    getTwitchAvatar(user).then((avatarUrl) => {
-      io.emit("RitualAvatar", avatarUrl);
-    });
   });
 
   twitchListener.onChannelRedemptionAdd(twitchAuth.channelID, (e) => {
@@ -234,17 +255,6 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
 });
 
 function initPage() {
-  const sources = [
-    {
-      scene: "Capture ancien jeu",
-      id: 20,
-    },
-    {
-      scene: "Dev",
-      id: 32,
-    },
-  ];
-
   sources.forEach((source) => {
     obs.client.call("SetSceneItemEnabled", {
       sceneName: source.scene,

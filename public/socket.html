@@ -15,18 +15,18 @@
       <div class="malwareEnd">
         <div class="malwareEnd-video"></div>
       </div>
+      <div id="HyppeTrain">
+        <img src="media/train.gif" >
+      </div>
+      <div id="MainRitual"></div>
     </main>
-    <div id="MainRitual"></div>
     <div class="snowflakes"></div>
     <div class="dropHearts"></div>
-
     <script>
       const socket = io("http://localhost:3006");
       socket.on("connect", () => {
         console.log("Connecté au serveur Socket.IO");
       });
-
-      
     </script>
 
     <script src="/js/confetti.js"></script>

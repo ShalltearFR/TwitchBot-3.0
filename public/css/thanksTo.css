@@ -1,4 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Lobster&family=Satisfy&display=swap');
+@font-face {
+  font-family: Sigmar One;
+  src: url("/ttf/SigmarOne-Regular.ttf");
+}
 
 body {
   margin: 0;
@@ -8,16 +11,34 @@ body {
 
 h1 {
   text-align: center;
-  font-family: "Lobster";
+  font-family: "Sigmar One";
   font-size: 96px;
   margin-top: 0;
   margin-bottom: 20px;
   animation: pulse;
   animation-duration: 2s;
   animation-iteration-count: infinite;
+  color: #FFC462;
+}
+
+h2 {
+  text-align: center;
+  font-family: "Sigmar One";
+  font-size: 48px;
+  margin-top: 0;
+  margin-bottom: 20px;
+  animation: pulse;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  color: #F78F1E;
 }
 
 main {
+  overflow: hidden;
+  height: 810px;
+}
+
+main #list {
   display: flex;
   flex-direction: column;
   gap: 20px 0;
@@ -26,9 +47,9 @@ main {
 section div{
   text-align: center;
   position: relative;
-  font-family: "Lobster";
+  font-family: "Sigmar One";
   font-size: 32px;
-  color: #b85909;
+  color: #875fc7;
   text-decoration: underline;
   text-underline-offset: 8px;
 }
@@ -36,13 +57,27 @@ section div{
 ul {
   margin: 0;
   padding: 0;
+  color: #E968C0;
 }
 
 li {
   list-style: none;
   text-align: center;
-  font-family: "Satisfy";
+  font-family: "Sigmar One";
   font-size: 28px;
   margin: 0;
   padding: 0;
+}
+
+.defilement {
+  animation: defilementVertical 10s linear infinite; /* 5s de défilement, animation linéaire, répétition infinie */
+}
+
+@keyframes defilementVertical {
+  from {
+    transform: translateY(100%); 
+  }
+  to {
+    transform: translateY(-100%);
+  }
 }

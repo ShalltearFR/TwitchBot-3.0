@@ -1,6 +1,0 @@
-﻿# Added by Docker Desktop
-# 192.168.1.40 host.docker.internal
-# 192.168.1.40 gateway.docker.internal
-# To allow the same kube context to work on the host and the container:
-127.0.0.1 kubernetes.docker.internal
-# End of section

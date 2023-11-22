@@ -10,7 +10,7 @@ const app = express();
 app.use(express.static("public"));
 
 app.get("/auth", (req, res) => {
-  const authUrl = `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${twitchAuth.clientID}&redirect_uri=${redirectUri}&scope=chat:read+chat:edit+channel:read:redemptions+channel:manage:redemptions+channel:moderate+moderator:read:followers+channel:read:subscriptions+bits:read`;
+  const authUrl = `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${twitchAuth.clientID}&redirect_uri=${redirectUri}&scope=chat:read+chat:edit+channel:read:redemptions+channel:manage:redemptions+channel:moderate+moderator:read:followers+channel:read:subscriptions+bits:read+channel:read:hype_train`;
   res.redirect(authUrl);
 });
 

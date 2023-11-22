@@ -30,15 +30,13 @@ const init = async () => {
 
   thanksJson?.gifts?.forEach((gift) => {
     const giftElement = document.createElement("li");
-    const giftName = Object.keys(gift)[0];
-    giftElement.textContent = `${giftName} avec ${gift[giftName].amount} subs`;
+    giftElement.textContent = `${gift.name} avec ${gift.amount} subs`;
     giftsListElement.appendChild(giftElement);
   });
 
   thanksJson?.bits?.forEach((cheer) => {
     const cheerElement = document.createElement("li");
-    const cheerName = Object.keys(cheer)[0];
-    cheerElement.textContent = `${cheerName} avec ${cheer[cheerName].amount} bits`;
+    cheerElement.textContent = `${cheer.name} avec ${cheer.amount} bits`;
     bitsListElement.appendChild(cheerElement);
   });
 
@@ -47,7 +45,17 @@ const init = async () => {
     raidsElement.textContent = raids;
     raidsListElement.appendChild(raidsElement);
   });
+  const conteneur = document.querySelector('main');
+  conteneur.style.opacity = 0
 
+  setTimeout(()=> {
+    conteneur.style.opacity = 1
+    if (conteneur.scrollHeight > 800) {
+      const list = document.querySelector('#list');
+      list.classList.add('defilement');
+    }
+  },1000)
+  
   // N'affiche pas les evenements s'il n'y en a pas eu pendant le stream
   const followsSectionElement = document.getElementById("followsSection");
   const subsSectionElement = document.getElementById("subsSection");
