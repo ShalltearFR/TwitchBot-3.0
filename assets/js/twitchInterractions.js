@@ -133,6 +133,17 @@ twitchBot.then(({ twitchListener, twitchChat, twitchAPI }) => {
     console.log(
       `RAID EVENT | NAME: ${event.raidingBroadcasterDisplayName} AVEC ${event.viewers} VIEWERS|`
     );
+
+    twitchChat.say(
+      twitchAuth.channelName,
+      `!topin ${event.raidingBroadcasterDisplayName}`
+    );
+
+    twitchChat.say(
+      twitchAuth.channelName,
+      `/shoutout ${event.raidingBroadcasterDisplayName}`
+    );
+
     thanksTo.raids.push(
       `${event.raidingBroadcasterDisplayName} avec ${event.viewers} viewers`
     );
